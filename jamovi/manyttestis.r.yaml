@@ -1,0 +1,15 @@
+---
+name:  manyttestIS
+title: Pairwise Independent T-Tests
+jrs:   '1.1'
+
+items:
+    - name: tests
+      title: '`Pairwise Independent Samples T-Tests - ${dep}`'
+      type: Table
+      columns: []
+      clearWith:
+        - dep
+        - groups
+
+...
