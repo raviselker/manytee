@@ -73,13 +73,14 @@ manyttestISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             table$addColumn(name='d', title='Cohen\'s d', type='number', visible="(effectSize)")
             
             groups <- self$groups
+            
+            if (is.null(groups))
+                return()
+            
             levels <- groups %>%
                 tidyr::unite(group, groupNames, sep = '...') %>%
                 .[['group']]
             nGroups <- nrow(groups)
-            
-            if (is.null(groups))
-                return()
             
             comp <- tibble::tibble(group1=character(), group2=character())
             for (i in 1:(nGroups-1)) {
@@ -104,8 +105,6 @@ manyttestISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             
             table <- self$results$tests
             
-            print(results)
-
             for (i in 1:nrow(results)) {
                 row <- as.list(results[i,])
                 table$setRow(rowNo=i, values=row)
@@ -154,9 +153,11 @@ manyttestISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                 }
             }
             
-            ts <- ts %>%
-                dplyr::mutate(p_adjust = stats::p.adjust(p, method = 'holm'))
-            
+            if (self$options$corMethod != 'none') {
+                ts <- ts %>%
+                    dplyr::mutate(p = stats::p.adjust(p, method = self$options$corMethod))
+            }
+
             # ts <- ts %>% 
             #     tidyr::separate(group1, paste(vars, 1, sep='_'), sep="\\.{3}") %>%
             #     tidyr::separate(group2, paste(vars, 2, sep='_'), sep="\\.{3}")

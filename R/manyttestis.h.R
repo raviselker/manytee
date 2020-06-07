@@ -8,6 +8,7 @@ manyttestISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         initialize = function(
             dep = NULL,
             groups = NULL,
+            corMethod = "holm",
             hypothesis = "different",
             meanDiff = FALSE,
             ci = FALSE,
@@ -15,8 +16,7 @@ manyttestISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             effectSize = FALSE,
             ciES = FALSE,
             ciWidthES = 95,
-            n = TRUE,
-            miss = "perAnalysis", ...) {
+            n = TRUE, ...) {
 
             super$initialize(
                 package='manytee',
@@ -40,6 +40,18 @@ manyttestISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
                     "ordinal"),
                 permitted=list(
                     "factor"))
+            private$..corMethod <- jmvcore::OptionList$new(
+                "corMethod",
+                corMethod,
+                options=list(
+                    "none",
+                    "holm",
+                    "hochberg",
+                    "hommel",
+                    "bonferroni",
+                    "BH",
+                    "BY"),
+                default="holm")
             private$..hypothesis <- jmvcore::OptionList$new(
                 "hypothesis",
                 hypothesis,
@@ -80,16 +92,10 @@ manyttestISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
                 "n",
                 n,
                 default=TRUE)
-            private$..miss <- jmvcore::OptionList$new(
-                "miss",
-                miss,
-                options=list(
-                    "perAnalysis",
-                    "listwise"),
-                default="perAnalysis")
 
             self$.addOption(private$..dep)
             self$.addOption(private$..groups)
+            self$.addOption(private$..corMethod)
             self$.addOption(private$..hypothesis)
             self$.addOption(private$..meanDiff)
             self$.addOption(private$..ci)
@@ -98,11 +104,11 @@ manyttestISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             self$.addOption(private$..ciES)
             self$.addOption(private$..ciWidthES)
             self$.addOption(private$..n)
-            self$.addOption(private$..miss)
         }),
     active = list(
         dep = function() private$..dep$value,
         groups = function() private$..groups$value,
+        corMethod = function() private$..corMethod$value,
         hypothesis = function() private$..hypothesis$value,
         meanDiff = function() private$..meanDiff$value,
         ci = function() private$..ci$value,
@@ -110,11 +116,11 @@ manyttestISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         effectSize = function() private$..effectSize$value,
         ciES = function() private$..ciES$value,
         ciWidthES = function() private$..ciWidthES$value,
-        n = function() private$..n$value,
-        miss = function() private$..miss$value),
+        n = function() private$..n$value),
     private = list(
         ..dep = NA,
         ..groups = NA,
+        ..corMethod = NA,
         ..hypothesis = NA,
         ..meanDiff = NA,
         ..ci = NA,
@@ -122,8 +128,7 @@ manyttestISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         ..effectSize = NA,
         ..ciES = NA,
         ..ciWidthES = NA,
-        ..n = NA,
-        ..miss = NA)
+        ..n = NA)
 )
 
 manyttestISResults <- if (requireNamespace('jmvcore')) R6::R6Class(
@@ -144,7 +149,8 @@ manyttestISResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                 columns=list(),
                 clearWith=list(
                     "dep",
-                    "groups")))}))
+                    "groups",
+                    "p")))}))
 
 manyttestISBase <- if (requireNamespace('jmvcore')) R6::R6Class(
     "manyttestISBase",
@@ -172,6 +178,11 @@ manyttestISBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #' @param data the data as a data frame
 #' @param dep the dependent variables
 #' @param groups the grouping variables
+#' @param corMethod \code{'none'}, \code{'holm'} (default), \code{'hochberg'},
+#'   \code{'hommel'}, \code{'bonferroni'},  \code{'BH'}, or \code{'BY'}, the
+#'   p-value correction method that is used; No  correction, Holm (1979),
+#'   Hochberg (1988), Hommel (1988), Benjamini &  Hochberg (1995), and Benjamini
+#'   & Yekutieli (2001) respectively
 #' @param hypothesis \code{'different'} (default), \code{'oneGreater'} or
 #'   \code{'twoGreater'}, the alternative hypothesis; group 1 different to group
 #'   2, group 1 greater than group 2, and group 2 greater than group 1
@@ -190,10 +201,6 @@ manyttestISBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #'   confidence intervals for the effect sizes
 #' @param n \code{TRUE} (default) or \code{FALSE}, provide the sample size of
 #'   both groups
-#' @param miss \code{'perAnalysis'} or \code{'listwise'}, how to handle
-#'   missing values; \code{'perAnalysis'} excludes missing values for individual
-#'   dependent variables, \code{'listwise'} excludes a row from all analyses if
-#'   one of its entries is missing.
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$tests} \tab \tab \tab \tab \tab a table \cr
@@ -210,6 +217,7 @@ manyttestIS <- function(
     data,
     dep,
     groups,
+    corMethod = "holm",
     hypothesis = "different",
     meanDiff = FALSE,
     ci = FALSE,
@@ -217,8 +225,7 @@ manyttestIS <- function(
     effectSize = FALSE,
     ciES = FALSE,
     ciWidthES = 95,
-    n = TRUE,
-    miss = "perAnalysis") {
+    n = TRUE) {
 
     if ( ! requireNamespace('jmvcore'))
         stop('manyttestIS requires jmvcore to be installed (restart may be required)')
@@ -236,6 +243,7 @@ manyttestIS <- function(
     options <- manyttestISOptions$new(
         dep = dep,
         groups = groups,
+        corMethod = corMethod,
         hypothesis = hypothesis,
         meanDiff = meanDiff,
         ci = ci,
@@ -243,8 +251,7 @@ manyttestIS <- function(
         effectSize = effectSize,
         ciES = ciES,
         ciWidthES = ciWidthES,
-        n = n,
-        miss = miss)
+        n = n)
 
     analysis <- manyttestISClass$new(
         options = options,

@@ -14,6 +14,5 @@ Imports:
     R6,
     tibble,
     tidyr,
-    dplyr,
-    tidyselect
+    dplyr
 RoxygenNote: 6.1.1

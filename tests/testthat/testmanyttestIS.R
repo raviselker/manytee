@@ -1,7 +1,7 @@
 
 context('manyttestIS')
 
-test_that('manyttestIS works', {
+test_that('manyttestIS sunny works', {
     set.seed(1337)
     N <- 100
     
@@ -11,7 +11,7 @@ test_that('manyttestIS works', {
         x2 = sample(letters[1:3], size = N, replace = TRUE)
     )
     
-    result <- manyttestIS(df, vars(y), vars(x1, x2))
+    result <- manyttestIS(df, vars(y), vars(x1, x2), corMethod = 'none')
     
     table <- result$tests$asDF
     
