@@ -1,6 +1,6 @@
 ---
-name:  manyttestIS
-title: Pairwise Independent T-Tests
+name:  manyttestsIS
+title: Pairwise T-Tests (Independent)
 menuGroup: T-Tests
 version: '1.0.0'
 jas: '1.2'
@@ -87,6 +87,14 @@ options:
             to group 2, group 1 greater than group 2, and group 2 greater than
             group 1 respectively
 
+    - name: n
+      title: N
+      type: Bool
+      default: true
+      description:
+          R: >
+            `TRUE` (default) or `FALSE`, provide the sample size of both groups
+
     - name: meanDiff
       title: Mean difference
       type: Bool
@@ -154,11 +162,26 @@ options:
             a number between 50 and 99.9 (default: 95), the width of confidence
             intervals for the effect sizes
             
-    - name: n
-      title: N
+    - name: flag
+      title: Flag significant tests
       type: Bool
-      default: true
+      default: false
       description:
+          ui: >
+            flag significant tests
           R: >
-            `TRUE` (default) or `FALSE`, provide the sample size of both groups
+            `TRUE` or `FALSE` (default), flag significant tests
+            
+    - name: flagBelow
+      title: "p <"
+      type: Number
+      min: 0
+      max: 1
+      default: 0.05
+      description:
+          ui: >
+            flag significant tests with p-values below this value
+          R: >
+            `TRUE` or `FALSE` (default), flag significant tests 
+            with p-values below this value
 ...

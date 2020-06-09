@@ -1,5 +1,5 @@
-title: Pairwise Independent T-Tests
-name: manyttestIS
+title: Pairwise T-Tests (Independent)
+name: manyttestsIS
 jus: '3.0'
 stage: 0
 compilerMode: tame
@@ -96,8 +96,11 @@ children:
         stretchFactor: 1
         children:
           - type: Label
-            label: Additional Statistics
+            label: Additional Options
             children:
+              - type: CheckBox
+                name: 'n'
+                label: 'N'
               - type: CheckBox
                 name: meanDiff
                 label: Mean difference
@@ -137,5 +140,13 @@ children:
                             format: number
                             enable: (effectSize && ciES)
               - type: CheckBox
-                name: 'n'
-                label: 'N'
+                name: flag
+                children:
+                  - type: TextBox
+                    name: flagBelow
+                    format: number
+                    enable: (flag)
+                    suggestedValues:
+                      - value: 0.05
+                      - value: 0.01
+                      - value: 0.001    

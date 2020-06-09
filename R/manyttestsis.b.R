@@ -1,7 +1,7 @@
 #' @importFrom magrittr %>%
-manyttestISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
-    "manyttestISClass",
-    inherit = manyttestISBase,
+manyttestsISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
+    "manyttestsISClass",
+    inherit = manyttestsISBase,
     private = list(
         ### Member variables ----
         .groups = NULL,
@@ -67,10 +67,26 @@ manyttestISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                     visible="(n)")
             }
             
+            ciTitle <- paste0(self$options$ciWidth, '% Confidence Interval')
+            ciTitleES <- paste0(self$options$ciWidthES, '% Confidence Interval')
+            
             table$addColumn(name='t', title='t', type='number')
             table$addColumn(name='df', title='df', type='number')
             table$addColumn(name='p', title='p', type='number', format='zto,pvalue')
-            table$addColumn(name='d', title='Cohen\'s d', type='number', visible="(effectSize)")
+            table$addColumn(name='md', title='Mean difference', type='number', visible="(meanDiff)")
+            table$addColumn(name='cil', title='Lower', type='number', visible="(meanDiff && ci)", superTitle=ciTitle)
+            table$addColumn(name='ciu', title='Upper', type='number', visible="(meanDiff && ci)", superTitle=ciTitle)
+            table$addColumn(name='es', title='Cohen\'s d', type='number', visible="(effectSize)")
+            table$addColumn(name='ciles', title='Lower', type='number', visible="(effectSize && ciES)", superTitle=ciTitleES)
+            table$addColumn(name='ciues', title='Upper', type='number', visible="(effectSize && ciES)", superTitle=ciTitleES)
+            
+            hypothesis <- self$options$hypothesis
+            if (hypothesis == 'oneGreater')
+                table$setNote("hyp", "H\u2090 Group 1 > Group 2")
+            else if (hypothesis == 'twoGreater')
+                table$setNote("hyp", "H\u2090 Group 1 < Group 2")
+            else
+                table$setNote("hyp", NULL)
             
             groups <- self$groups
             
@@ -104,10 +120,15 @@ manyttestISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
         .populateTable = function(results) {
             
             table <- self$results$tests
+            flag <- self$options$flag
+            flagBelow <- self$options$flagBelow
             
             for (i in 1:nrow(results)) {
                 row <- as.list(results[i,])
                 table$setRow(rowNo=i, values=row)
+                
+                if (flag && row[['p']] < flagBelow)
+                    table$addFormat(col='p', rowNo=i, jmvcore::Cell.NEGATIVE)
             }
         },
         
@@ -117,39 +138,60 @@ manyttestISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             comp <- private$.comparisons
             dep <- self$options$dep
             vars <- self$options$groups
+            confInt <- self$options$ciWidth / 100
+            confIntES <- self$options$ciWidthES / 100
+            
+            if (self$options$hypothesis == 'oneGreater')
+                Ha <- "greater"
+            else if (self$options$hypothesis == 'twoGreater')
+                Ha <- "less"
+            else
+                Ha <- "two.sided"
             
             ts <- tibble::tibble(group1=character(), group2=character(),
                                  n1=integer(), n2=integer(),
                                  t=numeric(), df=numeric(), p=numeric(), 
-                                 ci_lower=numeric(), ci_upper=numeric())
+                                 md=numeric(), cil=numeric(), ciu=numeric(),
+                                 es=numeric(), ciles=numeric(), ciues=numeric())            
             
             for (i in 1:nrow(comp)) {
                 
                 group1 <- data %>% 
                     dplyr::filter(group==!!as.character(comp[i,1])) %>%
-                    dplyr::select(!!dep)
+                    .[[dep]]
                 
                 group2 <- data %>% 
                     dplyr::filter(group==!!as.character(comp[i,2])) %>%
-                    dplyr::select(!!dep)
+                    .[[dep]]
                 
-                n1 <- nrow(group1)
-                n2 <- nrow(group2)
+                n1 <- length(group1)
+                n2 <- length(group2)
                 
                 if (n1 < 1 || n2 < 1 || n1 + n2 <= 2) {
                     
                     ts <- ts %>% tibble::add_row(
-                        group1=as.character(comp[i,1]), group2=as.character(comp[i,2]),
-                        n1=!!n1, n2=!!n2, t=NaN, df=NaN, p=NaN, ci_lower=NaN, ci_upper=NaN)
+                        group1=as.character(comp[i,1]), 
+                        group2=as.character(comp[i,2]),
+                        n1=!!n1, n2=!!n2, t=NaN, df=NaN, p=NaN, 
+                        md=NaN, cil=NaN, ciu=NaN,
+                        es=NaN, ciles=NaN, ciues=NaN)
                     
                 } else {
                     
-                    test <- t.test(group1, group2, var.equal = TRUE)
+                    es <- effsize::cohen.d(group1, group2, conf.level=confIntES)
+
+                    test <- t.test(group1, group2, var.equal = TRUE, 
+                                   alternative=Ha, conf.level=confInt)
                     
                     ts <- ts %>% tibble::add_row(
-                        group1=as.character(comp[i,1]), group2=as.character(comp[i,2]),
-                        n1=!!n1, n2=!!n2, t=test$statistic, df=test$parameter,
-                        p=test$p.value, ci_lower=test$conf.int[1], ci_upper=test$conf.int[2])
+                        group1=as.character(comp[i,1]), 
+                        group2=as.character(comp[i,2]),
+                        n1=!!n1, n2=!!n2, 
+                        t=test$statistic, df=test$parameter, p=test$p.value,
+                        md=test$estimate[1]-test$estimate[2],
+                        cil=test$conf.int[1], ciu=test$conf.int[2],
+                        es=es$estimate,
+                        ciles=!!es$conf.int[1], ciues=!!es$conf.int[2])
                 }
             }
             

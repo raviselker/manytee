@@ -1,11 +1,11 @@
 ---
-name:  manyttestIS
-title: Pairwise Independent T-Tests
+name:  manyttestsIS
+title: Pairwise T-Tests (Independent)
 jrs:   '1.1'
 
 items:
     - name: tests
-      title: '`Pairwise Independent Samples T-Tests - ${dep}`'
+      title: '`Pairwise T-Tests - ${dep}`'
       type: Table
       columns: []
       clearWith:

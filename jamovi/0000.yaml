@@ -12,12 +12,12 @@ description: >-
   More about what it does (maybe more than one line) Use four spaces when
   indenting paragraphs within the Description.
 analyses:
-  - title: Pairwise Independent T-Tests
-    name: manyttestIS
+  - title: Pairwise T-Tests (Independent)
+    name: manyttestsIS
     ns: manytee
     menuGroup: T-Tests
     menuSubgroup: manytee
-    menuTitle: Pairwise Independent T-Tests
+    menuTitle: Pairwise T-Tests (Independent)
 usesNative: true
 minApp: 1.0.8
 
