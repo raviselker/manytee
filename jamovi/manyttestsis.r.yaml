@@ -11,6 +11,8 @@ items:
       clearWith:
         - dep
         - groups
-        - p
+        - corMethod
+        - ciWidth
+        - ciWidthES
 
 ...

@@ -49,6 +49,7 @@ manyttestsISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             
             table <- self$results$tests
             groupNames <- self$options$groups
+            corMethod <- self$options$corMethod
             
             for (i in 1:2) {
                 for (name in groupNames) {
@@ -72,7 +73,34 @@ manyttestsISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             
             table$addColumn(name='t', title='t', type='number')
             table$addColumn(name='df', title='df', type='number')
-            table$addColumn(name='p', title='p', type='number', format='zto,pvalue')
+            
+            cor <- NULL
+            sub <- ''
+            if (corMethod == 'holm') {
+                cor <- 'Holm'
+                sub <- '<sub>holm</sub>'
+            } else if (corMethod == 'hochberg') {
+                cor <- 'Hochberg'
+                sub <- '<sub>hoch</sub>'
+            } else if (corMethod == 'hommel') {
+                cor <- 'Hommel'
+                sub <- '<sub>homm</sub>'
+            } else if (corMethod == 'bonferroni') {
+                cor <- 'Bonferroni'
+                sub <- '<sub>bonf</sub>'
+            } else if (corMethod == 'BH') {
+                cor <- 'Benjamini & Hochberg'
+                sub <- '<sub>BH</sub>'
+            } else if (corMethod == 'BY') {
+                cor <- 'Benjamini & Yekutieli'
+                sub <- '<sub>BY</sub>'
+            }
+            
+            table$addColumn(name='p', title=jmvcore::format('p{}', sub), type='number', format='zto,pvalue')
+                
+            if (! is.null(cor))
+                table$setNote('pcor', jmvcore::format('{} corrected p-value', cor))
+            
             table$addColumn(name='md', title='Mean difference', type='number', visible="(meanDiff)")
             table$addColumn(name='cil', title='Lower', type='number', visible="(meanDiff && ci)", superTitle=ciTitle)
             table$addColumn(name='ciu', title='Upper', type='number', visible="(meanDiff && ci)", superTitle=ciTitle)

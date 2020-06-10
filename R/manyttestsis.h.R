@@ -158,7 +158,9 @@ manyttestsISResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                 clearWith=list(
                     "dep",
                     "groups",
-                    "p")))}))
+                    "corMethod",
+                    "ciWidth",
+                    "ciWidthES")))}))
 
 manyttestsISBase <- if (requireNamespace('jmvcore')) R6::R6Class(
     "manyttestsISBase",
