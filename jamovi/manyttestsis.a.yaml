@@ -171,17 +171,5 @@ options:
             flag significant tests
           R: >
             `TRUE` or `FALSE` (default), flag significant tests
-            
-    - name: flagBelow
-      title: "p <"
-      type: Number
-      min: 0
-      max: 1
-      default: 0.05
-      description:
-          ui: >
-            flag significant tests with p-values below this value
-          R: >
-            `TRUE` or `FALSE` (default), flag significant tests 
-            with p-values below this value
+
 ...

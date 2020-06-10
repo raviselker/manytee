@@ -17,8 +17,7 @@ manyttestsISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             effectSize = FALSE,
             ciES = FALSE,
             ciWidthES = 95,
-            flag = FALSE,
-            flagBelow = 0.05, ...) {
+            flag = FALSE, ...) {
 
             super$initialize(
                 package='manytee',
@@ -98,12 +97,6 @@ manyttestsISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
                 "flag",
                 flag,
                 default=FALSE)
-            private$..flagBelow <- jmvcore::OptionNumber$new(
-                "flagBelow",
-                flagBelow,
-                min=0,
-                max=1,
-                default=0.05)
 
             self$.addOption(private$..dep)
             self$.addOption(private$..groups)
@@ -117,7 +110,6 @@ manyttestsISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             self$.addOption(private$..ciES)
             self$.addOption(private$..ciWidthES)
             self$.addOption(private$..flag)
-            self$.addOption(private$..flagBelow)
         }),
     active = list(
         dep = function() private$..dep$value,
@@ -131,8 +123,7 @@ manyttestsISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         effectSize = function() private$..effectSize$value,
         ciES = function() private$..ciES$value,
         ciWidthES = function() private$..ciWidthES$value,
-        flag = function() private$..flag$value,
-        flagBelow = function() private$..flagBelow$value),
+        flag = function() private$..flag$value),
     private = list(
         ..dep = NA,
         ..groups = NA,
@@ -145,8 +136,7 @@ manyttestsISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
         ..effectSize = NA,
         ..ciES = NA,
         ..ciWidthES = NA,
-        ..flag = NA,
-        ..flagBelow = NA)
+        ..flag = NA)
 )
 
 manyttestsISResults <- if (requireNamespace('jmvcore')) R6::R6Class(
@@ -220,8 +210,6 @@ manyttestsISBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #' @param ciWidthES a number between 50 and 99.9 (default: 95), the width of
 #'   confidence intervals for the effect sizes
 #' @param flag \code{TRUE} or \code{FALSE} (default), flag significant tests
-#' @param flagBelow \code{TRUE} or \code{FALSE} (default), flag significant
-#'   tests  with p-values below this value
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$tests} \tab \tab \tab \tab \tab a table \cr
@@ -247,8 +235,7 @@ manyttestsIS <- function(
     effectSize = FALSE,
     ciES = FALSE,
     ciWidthES = 95,
-    flag = FALSE,
-    flagBelow = 0.05) {
+    flag = FALSE) {
 
     if ( ! requireNamespace('jmvcore'))
         stop('manyttestsIS requires jmvcore to be installed (restart may be required)')
@@ -275,8 +262,7 @@ manyttestsIS <- function(
         effectSize = effectSize,
         ciES = ciES,
         ciWidthES = ciWidthES,
-        flag = flag,
-        flagBelow = flagBelow)
+        flag = flag)
 
     analysis <- manyttestsISClass$new(
         options = options,

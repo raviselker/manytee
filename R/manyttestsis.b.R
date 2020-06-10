@@ -81,12 +81,26 @@ manyttestsISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             table$addColumn(name='ciues', title='Upper', type='number', visible="(effectSize && ciES)", superTitle=ciTitleES)
             
             hypothesis <- self$options$hypothesis
-            if (hypothesis == 'oneGreater')
+            flag <- self$options$flag
+            if (hypothesis == 'oneGreater') {
+                
                 table$setNote("hyp", "H\u2090 Group 1 > Group 2")
-            else if (hypothesis == 'twoGreater')
+                if (flag)
+                    table$setNote('flag', '* p < .05, ** p < .01, *** p < .001, one-tailed')
+                
+            } else if (hypothesis == 'twoGreater') {
+                
                 table$setNote("hyp", "H\u2090 Group 1 < Group 2")
-            else
+                if (flag)
+                    table$setNote('flag', '* p < .05, ** p < .01, *** p < .001, one-tailed')
+                
+            } else {
+                
                 table$setNote("hyp", NULL)
+                if (flag)
+                    table$setNote('flag', '* p < .05, ** p < .01, *** p < .001')
+                
+            }
             
             groups <- self$groups
             
@@ -121,14 +135,19 @@ manyttestsISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
             
             table <- self$results$tests
             flag <- self$options$flag
-            flagBelow <- self$options$flagBelow
-            
+
             for (i in 1:nrow(results)) {
                 row <- as.list(results[i,])
                 table$setRow(rowNo=i, values=row)
                 
-                if (flag && row[['p']] < flagBelow)
-                    table$addFormat(col='p', rowNo=i, jmvcore::Cell.NEGATIVE)
+                if (flag) {
+                    if (row$p < .001)
+                        table$addSymbol(rowNo=i, col='p', '***')
+                    else if (row$p < .01)
+                        table$addSymbol(rowNo=i, col='p', '**')
+                    else if (row$p < .05)
+                        table$addSymbol(rowNo=i, col='p', '*')
+                }
             }
         },
         

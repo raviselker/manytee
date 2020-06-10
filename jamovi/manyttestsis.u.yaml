@@ -141,12 +141,3 @@ children:
                             enable: (effectSize && ciES)
               - type: CheckBox
                 name: flag
-                children:
-                  - type: TextBox
-                    name: flagBelow
-                    format: number
-                    enable: (flag)
-                    suggestedValues:
-                      - value: 0.05
-                      - value: 0.01
-                      - value: 0.001    
