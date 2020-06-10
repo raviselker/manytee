@@ -5,6 +5,33 @@ menuGroup: T-Tests
 version: '1.0.0'
 jas: '1.2'
 
+description:
+    main: |
+        The manyttestsIS function is used to perform t-tests for all possible 
+        combinations of (sub)groups of one or more grouping variables while 
+        being able to add a multiple testing correction for the p-values.
+
+    R:
+        dontrun: false
+        usage: |
+            data('ToothGrowth')
+
+            manyttestsIS(data = ToothGrowth, dep = 'len', groups = 'dose')
+
+            # 
+            #  PAIRWISE T-TESTS (INDEPENDENT)
+            # 
+            #  Pairwise T-Tests - len                       
+            #  ──────────────────────────────────────────── 
+            #  dose    dose    t         df      p-holm   
+            #  ──────────────────────────────────────────── 
+            #  0.5     1        -6.48    38.0    < .001   
+            #          2       -11.80    38.0    < .001   
+            #  1       2        -4.90    38.0    < .001   
+            #  ──────────────────────────────────────────── 
+            #  Note. Holm corrected p-value
+            # 
+
 options:
     - name: data
       type: Data
@@ -23,7 +50,7 @@ options:
           ui: >
             the dependent variable
           R: >
-            the dependent variables
+            the dependent variable
 
     - name: groups
       title: Grouping Variables
@@ -37,7 +64,7 @@ options:
           ui: >
             the grouping variables specifying the groups
           R: >
-            the grouping variables
+            the grouping variables specifying the groups
 
     - name: corMethod
       title: Correction method
@@ -92,6 +119,8 @@ options:
       type: Bool
       default: false
       description:
+          ui: >
+            provide the sample size of both groups
           R: >
             `TRUE` or `FALSE` (default), provide the sample size of both groups
 

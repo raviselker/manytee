@@ -184,10 +184,33 @@ manyttestsISBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 
 #' Pairwise T-Tests (Independent)
 #'
+#' The manyttestsIS function is used to perform t-tests for all possible 
+#' combinations of (sub)groups of one or more grouping variables while 
+#' being able to add a multiple testing correction for the p-values.
 #' 
+#'
+#' @examples
+#' data('ToothGrowth')
+#'
+#' manyttestsIS(data = ToothGrowth, dep = 'len', groups = 'dose')
+#'
+#' #
+#' #  PAIRWISE T-TESTS (INDEPENDENT)
+#' #
+#' #  Pairwise T-Tests - len
+#' #  --------------------------------------------
+#' #  dose    dose    t         df      p-holm
+#' #  --------------------------------------------
+#' #  0.5     1        -6.48    38.0    < .001
+#' #          2       -11.80    38.0    < .001
+#' #  1       2        -4.90    38.0    < .001
+#' #  --------------------------------------------
+#' #  Note. Holm corrected p-value
+#' #
+#'
 #' @param data the data as a data frame
-#' @param dep the dependent variables
-#' @param groups the grouping variables
+#' @param dep the dependent variable
+#' @param groups the grouping variables specifying the groups
 #' @param corMethod \code{'none'}, \code{'holm'} (default), \code{'hochberg'},
 #'   \code{'hommel'}, \code{'bonferroni'},  \code{'BH'}, or \code{'BY'}, the
 #'   p-value correction method that is used; No  correction, Holm (1979),

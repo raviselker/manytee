@@ -18,6 +18,10 @@ analyses:
     menuGroup: T-Tests
     menuSubgroup: manytee
     menuTitle: Pairwise T-Tests (Independent)
+    description: |
+      The manyttestsIS function is used to perform t-tests for all possible 
+      combinations of (sub)groups of one or more grouping variables while 
+      being able to add a multiple testing correction for the p-values.
 usesNative: true
 minApp: 1.0.8
 
