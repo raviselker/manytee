@@ -38,3 +38,25 @@ test_that('manyttestsIS sunny works', {
     expect_equivalent(row$ciles, es$conf.int[1], tolerance = 1e-3)
     expect_equivalent(row$ciues, es$conf.int[2], tolerance = 1e-3)
 })
+
+test_that('manyttestsIS rainy works', {
+    
+    df <- list(
+        'y 1' = c(1, 2, 2, 1, 3, 4),
+        'x 1' = c('A', 'A', 'A', 'A', 'B 2', 'C')
+    )
+    
+    attr(df, 'row.names') <- seq_len(length(df[[1]]))
+    attr(df, 'class') <- 'data.frame'
+    
+    result <- manyttestsIS(df, 'y 1', 'x 1')
+    table <- result$tests$asDF
+    
+    r1 <- t.test(c(1,2,2,1), 3, var.equal = TRUE)
+    
+    # Test t-statistics
+    expect_equivalent(table$t[1], r1$statistic, tolerance = 1e-3)
+    expect_equivalent(table$p[1], r1$p.value, tolerance = 1e-3)
+    testthat::expect_condition(is.nan(df[3]))
+    
+})
