@@ -90,10 +90,10 @@ options:
     - name: n
       title: N
       type: Bool
-      default: true
+      default: false
       description:
           R: >
-            `TRUE` (default) or `FALSE`, provide the sample size of both groups
+            `TRUE` or `FALSE` (default), provide the sample size of both groups
 
     - name: meanDiff
       title: Mean difference

@@ -168,7 +168,7 @@ manyttestsISClass <- if (requireNamespace('jmvcore')) R6::R6Class(
                 row <- as.list(results[i,])
                 table$setRow(rowNo=i, values=row)
                 
-                if (flag) {
+                if (flag && ! is.nan(row$p)) {
                     if (row$p < .001)
                         table$addSymbol(rowNo=i, col='p', '***')
                     else if (row$p < .01)

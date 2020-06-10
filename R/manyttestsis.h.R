@@ -10,7 +10,7 @@ manyttestsISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             groups = NULL,
             corMethod = "holm",
             hypothesis = "different",
-            n = TRUE,
+            n = FALSE,
             meanDiff = FALSE,
             ci = FALSE,
             ciWidth = 95,
@@ -64,7 +64,7 @@ manyttestsISOptions <- if (requireNamespace('jmvcore')) R6::R6Class(
             private$..n <- jmvcore::OptionBool$new(
                 "n",
                 n,
-                default=TRUE)
+                default=FALSE)
             private$..meanDiff <- jmvcore::OptionBool$new(
                 "meanDiff",
                 meanDiff,
@@ -197,7 +197,7 @@ manyttestsISBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #'   \code{'twoGreater'}, the alternative hypothesis; group 1 different to group
 #'   2, group 1 greater than group 2, and group 2 greater than group 1
 #'   respectively
-#' @param n \code{TRUE} (default) or \code{FALSE}, provide the sample size of
+#' @param n \code{TRUE} or \code{FALSE} (default), provide the sample size of
 #'   both groups
 #' @param meanDiff \code{TRUE} or \code{FALSE} (default), provide means and
 #'   standard errors
@@ -230,7 +230,7 @@ manyttestsIS <- function(
     groups,
     corMethod = "holm",
     hypothesis = "different",
-    n = TRUE,
+    n = FALSE,
     meanDiff = FALSE,
     ci = FALSE,
     ciWidth = 95,
